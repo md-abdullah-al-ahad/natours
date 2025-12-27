@@ -1,6 +1,5 @@
 const express = require('express');
 const fs = require('fs');
-const { get } = require('http');
 const morgan = require('morgan');
 const app = express();
 const port = 3000;
@@ -131,18 +130,31 @@ const deleteUser = (req, res) => {
 // app.patch('/api/v1/tours/:id', updateTour);
 // app.delete('/api/v1/tours/:id', deleteTour);
 // app.post('/api/v1/tours', createTour);
-app.route('/api/v1/users').get(getAllUsers).post(createUser);
-app
-  .route('/api/v1/users/:id')
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser);
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
-app
-  .route('/api/v1/tours/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+tourRouter.route('/').get(getAllTours).post(createTour);
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+
+userRouter.route('/').get(getAllUsers).post(createUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+
+// app.route('/api/v1/users').get(getAllUsers).post(createUser);
+// app
+//   .route('/api/v1/users/:id')
+//   .get(getUser)
+//   .patch(updateUser)
+//   .delete(deleteUser);
+// app.route('/api/v1/tours').get(getAllTours).post(createTour);
+// app
+//   .route('/api/v1/tours/:id')
+//   .get(getTour)
+//   .patch(updateTour)
+//   .delete(deleteTour);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
